@@ -67,6 +67,13 @@ class RegistrationView(View):
         return render(request, template_name=self.template_name, context={'form': form})
 
 
+class PasswordChangeDoneView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        messages.success(request, 'Ваш пароль был успешно изменен')
+        return redirect(reverse('core:index', args=[request.user.get_username()]))
+
+
 class IndexView(LoginRequiredMixin, OnlyCurrentUserAccessMixin, View):
     """ Index page """
     form = UploadLogForm

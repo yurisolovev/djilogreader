@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.IndexRedirectView.as_view(), name='index-redirect'),
     path('accounts/registration/', views.RegistrationView.as_view(), name='registration'),
     path('accounts/login/', views.UserLoginView.as_view(), name='login'),
+    path('accounts/password_change/done/', views.PasswordChangeDoneView.as_view(), name='password_change_done'),
     path('<username>/logs/', views.IndexView.as_view(), name='index'),
     path('<username>/logs/<int:pk>/', views.LogView.as_view(), name='log'),
     path('<username>/logs/delete/', views.DeleteLog.as_view(), name='delete-log'),
