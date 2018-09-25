@@ -1,0 +1,12 @@
+#map {
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+#smallMap {
+    width: 200px !important;
+    height: 130px !important;
+    position: relative;
+    overflow: hidden;
+}

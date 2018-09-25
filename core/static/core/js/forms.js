@@ -1,0 +1,3 @@
+$(".input-datepicker-autoclose").datepicker({autoclose:!0,format:"dd.mm.yyyy",language:"ru"});function sortValues(){var t=$.makeArray($(".select-sort option")).sort(function(t,e){return $(t).text()>$(e).text()?1:-1});$(".select-sort").empty().html(t)}$(document).ready(function(){var t=$(".select-sort option:selected").val();sortValues(),$(".select-sort option:selected").length?$(".select-sort").val(t):$(".select-sort").val(0)});$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})

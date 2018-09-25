@@ -1,0 +1,62 @@
+{% extends 'layout/base.html' %}
+
+{% load i18n %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block bootstrap4_content %}
+    <div class="page login-page">
+      <div class="container d-flex align-items-center">
+        <div class="form-holder has-shadow">
+          <div class="row">
+            <!-- Logo & Information Panel-->
+            <div class="col-lg-6">
+              <div class="info d-flex align-items-center">
+                <div class="content">
+                  <div class="logo">
+                    <h1>Вход DjiLogReader</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Form Panel    -->
+            <div class="col-lg-6 bg-white">
+              <div class="form d-flex align-items-center">
+                <div class="content">
+                  {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissable alert-link" role="alert">
+                    <button class="close" type="button" data-dismiss="alert" aria-label="{% trans 'close' %}">&#215;</button>
+                    <small>Неверное имя пользователя или пароль. Попробуйте снова</small>
+                    </div>
+                  {% endif %}
+                  <form action="{% url 'core:login' %}" method="post" class="form-validate">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <input id="{{ form.username.id_for_label }}" type="text" name="{{ form.username.html_name }}" required data-msg="Пожалуйста, введите ваше имя пользователя" class="input-material">
+                      <label for="{{ form.username.id_for_label }}" class="label-material">{{ form.username.label }}</label>
+                    </div>
+                    <div class="form-group">
+                      <input id="{{ form.password.id_for_label }}" type="password" name="{{ form.password.html_name }}" required data-msg="Пожалуйста, введите ваш пароль" class="input-material">
+                      <label for="{{ form.password.id_for_label }}" class="label-material">{{ form.password.label }}</label>
+                    </div>
+                    <div class="form-group">
+                      <button id="login" type="submit" name="loginSubmit" class="btn btn-primary">Войти</button>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                  </form>
+                  <a href="{% url 'password_reset' %}" class="forgot-pass">Забыли пароль?</a><br><small>Еще не зарегистрированы? </small><a href="{% url 'core:registration' %}" class="signup">Регистрация</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="copyrights text-center">
+        <p>st647zn &copy; 2012-2019</p>
+      </div>
+    </div>
+{% endblock %}
+
+{% block bootstrap4_after_content %}
+    {{ block.super }}
+{% endblock %}

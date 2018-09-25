@@ -1,0 +1,146 @@
+{% extends 'layout/base.html' %}
+
+{% load i18n %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block bootstrap4_content %}
+    <div class="page login-page">
+      <div class="container d-flex align-items-center">
+        <div class="form-holder has-shadow">
+          <div class="row">
+            <!-- Logo & Information Panel-->
+            <div class="col-lg-6">
+              <div class="info d-flex align-items-center">
+                <div class="content">
+                  <div class="logo">
+                    <h1>Регистрация</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Form Panel    -->
+            <div class="col-lg-6 bg-white">
+              <div class="form d-flex align-items-center">
+                <div class="content">
+                  <form action="{% url 'core:registration' %}" method="post" class="form-validate">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <input id="{{ form.username.id_for_label }}" type="text" name="{{ form.username.html_name }}" maxlength="{{ form.username.field.max_length }}" autofocus required data-msg="Пожалуйста, введите имя пользователя" class="input-material">
+                      <label for="{{ form.username.id_for_label }}" class="label-material">{{ form.username.label }}</label>
+                      {% for text in form.username.errors %}
+                        <small class="form-text text-danger">{{ text }}</small>
+                      {% endfor %}<!-- show error username validation -->
+                    </div>
+                    <div class="form-group">
+                      <input id="{{ form.password1.id_for_label }}" type="password" name="{{ form.password1.html_name }}" required data-msg="Пожалуйста, введите ваш пароль" class="input-material">
+                      <label for="{{ form.password1.id_for_label }}" class="label-material">{{ form.password1.label }}</label>
+                    </div>
+                    <div class="form-group">
+                      <input id="{{ form.password2.id_for_label }}" type="password" name="{{ form.password2.html_name }}" required data-msg="Пожалуйста, подтвердите ваш пароль" class="input-material">
+                      <label for="{{ form.password2.id_for_label }}" class="label-material">{{ form.password2.label }}</label>
+                      {% for text in form.password2.errors %}
+                        <small class="form-text text-danger">{{ text }}</small>
+                      {% endfor %}<!-- show error password validation -->
+                    </div>
+                    <div class="form-group terms-conditions">
+                      <input id="register-agree" name="registerAgree" type="checkbox" required value="1" data-msg="Пожалуйста, подтвердите ваше согласие" class="checkbox-template">
+                        <label for="register-agree"><small>Я ознакомился с <a href="#" data-toggle="modal" data-target=".bd-example-modal-lg">правилами сайта</a> и принимаю их условия.</small></label>
+                    </div>
+                    <div class="form-group">
+                      <button id="register" type="submit" name="registerSubmit" class="btn btn-primary">Зарегистрироваться</button>
+                      <button id="register" type="reset" class="btn btn-secondary">Очистить</button>
+                    </div>
+                  </form>
+                    <small>Уже зарегистрированы? </small><a href="{% url 'core:login' %}" class="signup">Войти</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="copyrights text-center">
+        <p>st647zn &copy; 2012-2019</p>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title text-muted">Пользовательское Соглашение</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-small text-muted text-justify">
+            <p>Настоящее Пользовательское Соглашение (Далее Соглашение) регулирует отношения между владельцем djilogreader.ru (далее DJILogReader или Администрация) с одной стороны и пользователем сайта с другой.
+            Сайт DJILogReader не является средством массовой информации.</p>
+            <p>Используя сайт, Вы соглашаетесь с условиями данного соглашения.<br>
+            <strong>Если Вы не согласны с условиями данного соглашения, не используйте сайт DJILogReader!</strong></p>
+            <h4 class="h4">Предмет соглашения</h4>
+            <p>Администрация предоставляет пользователю право на размещение на сайте следующей информации:</p>
+            <ul>
+              <li>Текстовой информации</li>
+              <li>Фотоматериалов</li>
+              <li>Ссылок на материалы, размещенные на других сайтах</li>
+            </ul>
+            <h4 class="h4">Права и обязанности сторон</h4>
+            <p><strong>Пользователь имеет право:</strong></p>
+            <ul>
+              <li>осуществлять поиск информации на сайте</li>
+              <li>получать информацию на сайте</li>
+              <li>создавать информацию для сайта</li>
+              <li>распространять информацию на сайте</li>
+              <li>копировать информацию на другие сайты с указанием источника</li>
+              <li>требовать от администрации скрытия любой информации переданной пользователем сайту</li>
+              <li>использовать информацию сайта в личных некоммерческих целях</li>
+              <li>использовать информацию сайта в коммерческих целях с разрешения правообладателей</li>
+            </ul>
+            <p><strong>Администрация имеет право:</strong></p>
+            <ul>
+              <li>по своему усмотрению и необходимости создавать, изменять, отменять правила</li>
+              <li>ограничивать доступ к любой информации на сайте</li>
+              <li>создавать, изменять, удалять информацию</li>
+              <li>удалять учетные записи</li>
+              <li>отказывать в регистрации без объяснения причин</li>
+            </ul>
+            <p><strong>Пользователь обязуется:</strong></p>
+            <ul>
+              <li>при копировании информации с других источников, включать в её состав информацию об авторе</li>
+              <li>не распространять информацию, которая направлена на пропаганду войны, разжигание национальной, расовой или религиозной ненависти и вражды, а также иной информации, за распространение которой предусмотрена уголовная или административная ответственность</li>
+              <li>не нарушать работоспособность сайта</li>
+              <li>не создавать несколько учётных записей на Сайте, если фактически они принадлежат одному и тому же лицу</li>
+              <li>не передавать в пользование свою учетную запись и/или логин и пароль своей учетной записи третьим лицам</li>
+              <li>не регистрировать учетную запись от имени или вместо другого лица за исключением случаев, предусмотренных законодательством РФ</li>
+              <li>не размещать материалы рекламного, эротического, порнографического или оскорбительного характера, а также иную информацию, размещение которой запрещено или противоречит нормам действующего законодательства РФ</li>
+              <li>не использовать скрипты (программы) для автоматизированного сбора информации и/или взаимодействия с Сайтом и его Сервисами</li>
+            </ul>
+            <p><strong>Администрация обязуется:</strong></p>
+            <ul>
+              <li>поддерживать работоспособность сайта за исключением случаев, когда это невозможно по независящим от Администрации причинам.</li>
+            </ul>
+            <h4 class="h4">Ответственность сторон</h4>
+              <ul>
+                <li>пользователь лично несет полную ответственность за распространяемую им информацию</li>
+                <li>администрация не несет никакой ответственности за достоверность информации, скопированной из других источников</li>
+                <li>администрация не несет никакой ответственности за услуги, предоставляемые третьими лицами</li>
+                <li>в случае возникновения форс-мажорной ситуации (боевые действия, чрезвычайное положение, стихийное бедствие и т. д.) Администрация не гарантирует сохранность информации, размещённой Пользователем, а также бесперебойную работу информационного ресурса</li>
+              </ul>
+            <h4 class="h4">Условия действия Соглашения</h4>
+              <p>Данное Соглашение вступает в силу при регистрации на сайте.<br>
+                 Соглашение перестает действовать при появлении его новой версии.<br>
+                 Администрация оставляет за собой право в одностороннем порядке изменять данное соглашение по своему усмотрению.<br>
+                 При любом изменении данного соглашения, администрация будет оповещать пользователей удобным для нее способом.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block bootstrap4_after_content %}
+    {{ block.super }}
+{% endblock %}

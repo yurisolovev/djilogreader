@@ -1,0 +1,193 @@
+{% extends 'layout/base.html' %}
+
+{% load i18n %}
+{% load bootstrap4 %}
+{% load countries %}
+{% load static %}
+
+{% block bootstrap4_extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
+{% endblock %}
+
+{% block title %}DjiLogReader - {{ user.get_full_name }}{% endblock %}
+
+{% block h2 %}Профиль{% endblock %}
+
+{% block content %}
+  <div class="breadcrumb-holder container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'core:index' user.username %}">Главная</a></li>
+      <li class="breadcrumb-item active">Профиль</li>
+    </ul>
+  </div>
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card card-profile">
+            <div style="background-image: url({% static 'core/img/profile-background.jpg' %});" class="card-header"></div>
+            <div class="card-body text-center">
+              {% if user.profile.profile_photo %}
+                <img src="{{ MEDIA_URL }}{{ user.profile.profile_photo.name }}" alt="..." class="card-profile-img">
+              {% else %}
+                <img src="{% static 'core/img/nophoto.jpg' %}" alt="..." class="card-profile-img">
+              {% endif %}
+              {% if user.get_full_name %}
+              <h3 class="mb-3">{{ user.get_full_name|title }}</h3>
+              {% else %}
+              <h3 class="mb-3">{{ user.username }}</h3>
+              {% endif %}
+              <small class="text-small text-muted">На сайте с {{ user.date_joined|date }}</small>
+              <div class="text-right"><a class="btn btn-sm btn-outline-primary" href="{% url 'core:edit-profile' user.username %}" data-toggle="tooltip" data-placement="top" title="Редактировать профиль"><i class="fa fa-edit"></i></a></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h5">Основная информация</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group row">
+                <div class="col-sm-6 text-small"><label class="label-info">День рождения:</label></div>
+                <div class="col-sm-6 text-small text-muted">{{ user.profile.birthdate|date|default:"не указан" }}</div>
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-6 text-small"><label class="label-info">Страна:</label></div>
+                {% if user.profile.country %}
+                <div class="col-sm-6 text-small text-muted"><i class="{{ user.profile.country.flag_css }}"></i>  {{ user.profile.country.name }}</div>
+                {% else %}
+                <div class="col-sm-6 text-small text-muted">не указана</div>
+                {% endif %}
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-6 text-small"><label class="label-info">Модель DJI:</label></div>
+                <div class="col-sm-6 text-small text-muted">{{ user.profile.dron_model|title|default:"не указана" }}</div>
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-6 text-small"><label class="label-info">E-mail:</label></div>
+                <div class="col-sm-6 text-small text-muted">{{ user.email|urlize|default:"не указан" }}</div>
+              </div>
+            </div>
+          </div>
+          {% if user.profile.info %}
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h5">О себе</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-small text-muted text-justify">{{ user.profile.info }}</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h4">Мои заметки</h3>
+            </div>
+            <div class="card-header">
+              <div class="row input-group">
+                <label for="note-title" id="chars_title" class="col-sm-3 text-small text-muted d-none d-sm-block">Осталось: {{ form_note.title.field.max_length }}/{{ form_note.title.field.max_length }}</label>
+                <div class="col-sm-1"></div>
+                <label for="note-body" id="chars_body" class="col-sm-8 text-small text-muted d-none d-sm-block">Осталось: {{ form_note.body.field.max_length }}/{{ form_note.body.field.max_length }}</label>
+              </div>
+              <form action="{% url 'core:create-note' user.username %}" method="post" class="input-group">
+                {% csrf_token %}
+                <input type="text" name="{{ form_note.title.html_name }}" maxlength="{{ form_note.title.field.max_length }}" placeholder="Название" required class="form-control col-sm-3" id="note-title">
+                <div class="col-sm-1"></div>
+                <textarea name="{{ form_note.body.html_name }}" maxlength="{{ form_note.body.field.max_length }}" placeholder="Содержание" required class="form-control col-sm-8" id="note-body"></textarea>
+                <input type="hidden" name="{{ form_note.user.html_name }}" value="{{ user.id }}">
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-outline-secondary"><i class="fa fa-send"></i></button>
+                </div>
+              </form>
+            </div>
+            <div class="list-group card-list-group">
+              {% if notes %}
+                {% for note in notes %}
+                <div class="list-group-item py-5">
+                  <div class="media">
+                    <img src="{% static 'core/img/note-icon.png' %}" class="media-object avatar avatar-md mr-3">
+                    <div class="media-body">
+                      <div class="media-heading">
+                        <small class="float-right text-muted">Добавлена {{ note.timestamp|date:"d M Y г. в H:i" }}</small>
+                        <h5>{{ note.title|capfirst }}</h5>
+                      </div>
+                      <div class="text-muted text-small text-justify">{{ note.body|capfirst|urlize }}</div>
+                      <div class="note-controls pull-right">
+                        <form method="post">
+                          {% csrf_token %}
+                          <input type="hidden" name="note_id" value="{{ note.id }}">
+                          <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#editModal" data-title="{{ note.title }}" data-body="{{ note.body }}" data-note_id="{{ note.id }}" title="Редактировать"><i class="fa fa-edit"></i></button>
+                          <button formaction="{% url 'core:delete-note' user.username%}" class="btn btn-sm btn-outline-danger" title="Удалить"><i class="fa fa-trash-o"></i></button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="list-group-item">
+                  <div class="pull-right">{% bootstrap_pagination notes %}</div>
+                </div>
+              {% else %}
+              <div class="list-group-item py-5">
+                <div class="text-muted text-small text-center">У вас пока нет сохраненных заметок . . .</div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Modal Edit Note-->
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Редактирование заметки</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" id="noteID" name="note_id">
+            <input type="hidden" name="{{ form_note.user.html_name }}" value="{{ user.id }}">
+            <div class="form-group">
+              <label for="titleNote" class="form-control-label">{{ form_note.title.label }}</label>
+              <input type="text" name="{{ form_note.title.html_name }}" maxlength="{{ form_note.title.field.max_length }}" placeholder="Название" required class="form-control" id="titleNote">
+            </div>
+            <div class="form-group">
+              <label for="bodyNote" class="form-control-label">{{ form_note.body.label }}</label>
+              <textarea name="{{ form_note.body.html_name }}" maxlength="{{ form_note.body.field.max_length }}" placeholder="Содержание" required class="form-control" id="bodyNote"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" formaction="{% url 'core:edit-note' user.username%}" class="btn btn-primary">Сохранить</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block bootstrap4_after_content %}
+  {{ block.super }}
+  <script src="{% static 'core/js/forms.js' %}"></script>
+  <script src="{% static 'core/js/countdown.js' %}"></script>
+  <script>
+    $('#editModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var title = button.data('title');
+        var body = button.data('body');
+        var note_id = button.data('note_id');
+        var modal = $(this);
+        modal.find('#titleNote').val(title);
+        modal.find('#bodyNote').val(body);
+        modal.find('#noteID').val(note_id);
+    })
+  </script>
+{% endblock %}

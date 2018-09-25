@@ -1,0 +1,79 @@
+{% extends 'layout/base.html' %}
+
+{% load bootstrap4 %}
+{% load i18n %}
+{% load static %}
+
+{% block bootstrap4_extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'core/css/map.css' %}">
+  <link rel="stylesheet" href="{% static 'core/vendor/lightbox2/css/lightbox.min.css' %}">
+{% endblock %}
+
+{% block title %}DjiLogReader - Просмотр информации о полете{% endblock %}
+
+{% block h2 %}Просмотр информации о полете{% endblock %}
+
+{% block content %}
+  <div class="breadcrumb-holder container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'core:index' user.username %}">Главная</a></li>
+      <li class="breadcrumb-item active">Просмотр информации о полете</li>
+    </ul>
+  </div>
+  <section class="forms">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h4">Карта</h3>
+            </div>
+            <div class="card-body">
+              <div id="map" class="map"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h4">Фотографии</h3>
+            </div>
+              {% for img, thumbnail in images.items %}
+              <div class="card-body text-center">
+                <a href="{{ MEDIA_URL }}{{ rel_path }}/{{ img }}" data-lightbox="roadtrip"><img class="example-image" src="{{ MEDIA_URL }}{{ rel_path }}/{{ thumbnail }}" alt="{{ img }}"/></a>
+              </div>
+              {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block bootstrap4_after_content %}
+  {{ block.super }}
+    <script src="{% static 'core/vendor/lightbox2/js/lightbox.min.js' %}"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <script>
+        ymaps.ready(init);
+        function init() {
+            var myMap = new ymaps.Map('map', {
+                center: [{{ log.data.latitude }}, {{ log.data.longitude }}],
+                zoom: 10,
+                controls: ['zoomControl']
+            });
+            var data = ymaps.geoXml.load("{{ kml }}");
+            data.then(function(res) {
+                myMap.geoObjects.add(res.geoObjects);
+            });
+        }
+    </script>
+    <script>
+        lightbox.option({
+          'wrapAround': false,
+          'albumLabel': 'Фотография %1 из %2'
+        })
+    </script>
+
+{% endblock %}

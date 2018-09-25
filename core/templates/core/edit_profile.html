@@ -1,0 +1,173 @@
+{% extends 'layout/base.html' %}
+
+{% load i18n %}
+{% load bootstrap4 %}
+{% load countries %}
+{% load static %}
+
+{% block bootstrap4_extra_head %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker3.min.css">
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'core/css/image.upload.css' %}">
+{% endblock %}
+
+{% block title %}DjiLogReader - Редактирование профиля{% endblock %}
+
+{% block h2 %}Редактирование профиля{% endblock %}
+
+{% block content %}
+  <div class="breadcrumb-holder container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'core:index' user.username %}">Главная</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'core:profile' user.username %}">Профиль</a></li>
+      <li class="breadcrumb-item active">Редактирование профиля</li>
+    </ul>
+  </div>
+  <section class="forms">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h4">Общая информация</h3>
+            </div>
+            <div class="card-body">
+              <form action="{% url 'core:edit-profile' user.username %}" role="form" method="post" class="form-horizontal form-validate">
+                {% csrf_token %}
+                <div class="form-group row">
+                  <div class="col-sm-12">
+                    <small class="form-text">* Поля, отмеченные звездочкой, обязательны для заполнения</small>
+                    <hr>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="{{ form_user.first_name.id_for_label }}" class="col-sm-3 form-control-label">{{ form_user.first_name.label }} *</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="{{ form_user.first_name.html_name }}" value="{{ form_user.first_name.value }}" maxlength="{{ form_user.first_name.field.max_length }}" id="{{ form_user.first_name.id_for_label }}" autofocus required data-msg="Пожалуйста, введите ваше имя" placeholder="Имя" class="form-control form-control-success">
+                    <small class="form-text">{{ form_user.first_name.help_text }}</small>
+                    {% for text in form_user.first_name.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error first name validation -->
+                  </div>
+                </div><!-- first name -->
+                <div class="form-group row">
+                  <label for="{{ form_user.last_name.id_for_label }}" class="col-sm-3 form-control-label">{{ form_user.last_name.label }} *</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="{{ form_user.last_name.html_name }}" value="{{ form_user.last_name.value }}" maxlength="{{ form_user.last_name.field.max_length }}" id="{{ form_user.last_name.id_for_label }}" required data-msg="Пожалуйста, введите вашу фамилию" placeholder="Фамилия" class="form-control form-control-success">
+                    <small class="form-text">{{ form_user.last_name.help_text }}</small>
+                    {% for text in form_user.last_name.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error last name validation -->
+                  </div>
+                </div><!-- last name -->
+                <div class="form-group row">
+                  <label for="{{ form_user.email.id_for_label }}" class="col-sm-3 form-control-label">{{ form_user.email.label }} *</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="{{ form_user.email.html_name }}" value="{{ form_user.email.value }}" maxlength="{{ form_user.email.field.max_length }}" id="{{ form_user.email.id_for_label }}" required data-msg="Пожалуйста, введите ваш email" placeholder="email@example.com" class="form-control form-control-success">
+                    <small class="form-text">{{ form_user.email.help_text }}</small>
+                    {% for text in form_user.email.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error email validation -->
+                  </div>
+                </div><!-- email -->
+                <div class="form-group row">
+                  <label for="{{ form_profile.birthdate.id_for_label }}" class="col-sm-3 form-control-label">{{ form_profile.birthdate.label }}</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="{{ form_profile.birthdate.html_name }}" value="{{ form_profile.birthdate.value|date:"d.m.Y" }}" id="{{ form_profile.birthdate.id_for_label }}" placeholder="Дата рождения"  class="form-control input-datepicker-autoclose">
+                    <small class="form-text">{{ form_profile.birthdate.help_text }}</small>
+                    {% for text in form_profile.birthdate.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error birthday validation -->
+                  </div>
+                </div><!-- birthdate -->
+                <div class="form-group row">
+                  <label for="{{ form_profile.country.id_for_label }}" class="col-sm-3 form-control-label">{{  form_profile.country.label }} *</label>
+                  <div class="col-sm-9">
+                    {% get_countries as countries %}
+                    <select name="{{ form_profile.country.html_name }}" id="{{ form_profile.country.id_for_label }}" required data-msg="Пожалуйста, выберите страну" class="form-control form-control-success select-sort">
+                      {% for country in countries %}
+                          {% if form_profile.country.value == country.code %}
+                            <option value="{{ country.code }}" selected>{{ country.name }}</option>
+                          {% else %}
+                            <option value="{{ country.code }}">{{ country.name }}</option>
+                          {% endif %}
+                      {% endfor %}
+                    </select>
+                    {% for text in form_profile.country.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error country validation -->
+                  </div>
+                </div><!-- select country -->
+                <div class="form-group row">
+                  <label for="{{ form_profile.info.id_for_label }}" class="col-sm-3 form-control-label">{{ form_profile.info.label }}</label>
+                  <div class="col-sm-9">
+                    <textarea name="{{ form_profile.info.html_name }}" id="{{ form_profile.info.id_for_label }}" placeholder="О себе" rows="10" cols="40" class="form-control form-control-success">{{ form_profile.info.value }}</textarea>
+                    {% for text in form_profile.info.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error info validation -->
+                  </div>
+                </div><!-- aboutme -->
+                <div class="form-group row">
+                  <label for="{{ form_profile.dron_model.id_for_label }}" class="col-sm-3 form-control-label">{{ form_profile.dron_model.label }} *</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="{{ form_profile.dron_model.html_name }}" value="{{ form_profile.dron_model.value }}" maxlength="{{ form_profile.dron_model.field.max_length }}" id="{{ form_profile.dron_model.id_for_label }}" required data-msg="Пожалуйста, введите модель вашего DJI" placeholder="Модель DJI" class="form-control form-control-success">
+                    <small class="form-text">{{ form_profile.dron_model.help_text }}</small>
+                    {% for text in form_profile.dron_model.errors %}
+                      <small class="form-text text-danger">{{ text }}</small>
+                    {% endfor %}<!-- show error dron_model validation -->
+                  </div>
+                </div><!-- dron_model -->
+                <div class="form-group row">
+                  <div class="col-sm-9 offset-sm-3">
+                    <input type="submit" value="Сохранить" class="btn btn-primary">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="card">
+            <div class="card-header d-flex align-items-center">
+              <h3 class="h4">Фото профиля</h3>
+            </div>
+            <div class="card-body">
+              <form action="{% url 'core:change-photo' user.username %}" role="form" method="post" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group row">
+                  <div class="col-sm-12 img-up">
+                    {% if user.profile.profile_photo %}
+                     <div class="preview text-center">
+                      <img src="{{ MEDIA_URL }}{{ user.profile.profile_photo.name }}" class="img-fluid img-preview" alt="...">
+                    </div>
+                      <label class="btn btn-sm btn-upload btn-upload-act">Обновить фотографию<input type="file" name="{{ form_image.profile_photo.html_name }}" class="upload-file" value="{{ form_profile.profile_photo.value }}" style="width: 0px;height: 0px;overflow: hidden;"></label>
+                      <button type="submit" formaction="{% url 'core:delete-photo' user.username %}" formmethod="post" class="close close-rel" data-toggle="tooltip" data-placement="top" title="Удалить фотографию">&#215;</button>
+                    {% else %}
+                    <div class="preview text-center">
+                      <img src="{% static 'core/img/nophoto.jpg' %}" class="img-fluid img-preview" alt="...">
+                    </div>
+                      <label class="btn btn-sm btn-upload btn-upload-act">Поставить фотографию<input type="file" name="{{ form_image.profile_photo.html_name }}" class="upload-file" value="{{ form_profile.profile_photo.value }}" style="width: 0px;height: 0px;overflow: hidden;"></label>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-sm-12 text-center">
+                    <input type="submit" value="Сохранить" class="btn btn-primary">
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block bootstrap4_after_content %}
+  {{ block.super }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/locales/bootstrap-datepicker.ru.min.js" charset="UTF-8"></script>
+  <script src="{% static 'core/js/forms.js' %}"></script>
+  <script src="{% static 'core/js/image-upload.js' %}"></script>
+{% endblock %}
