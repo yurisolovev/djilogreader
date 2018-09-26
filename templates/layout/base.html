@@ -75,7 +75,7 @@
         <li><a href="{% url 'core:profile' user.username %}"> <i class="icon-user"></i>Профиль </a></li>
         <li><a href="#settings" aria-expanded="false" data-toggle="collapse"> <i class="icon-bars"></i>Настройки </a>
           <ul id="settings" class="collapse list-unstyled ">
-            <li><a href="#">Сменить имя </a></li>
+            <li><a href="{% url 'core:username_change' %}">Сменить имя </a></li>
             <li><a href="{% url 'password_change' %}">Сменить пароль </a></li>
             <li><a href="#">Удалить аккаунт </a></li>
           </ul>

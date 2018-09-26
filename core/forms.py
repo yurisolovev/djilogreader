@@ -1,6 +1,9 @@
 from django.forms import ModelForm, Form, ValidationError
+from django.forms.fields import CharField
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 from django_countries.widgets import CountrySelectWidget
@@ -41,7 +44,17 @@ class UploadLogForm(ModelForm):
         fields = ('user', 'log_file')
 
 
-
 # ------------ Forms ------------
 class ProfileImageForm(Form):
     profile_photo = ImageFormField()
+
+
+class ChangeUsernameForm(Form):
+    new_username = CharField(max_length=150,
+                             validators=[RegexValidator(regex=r'^[\w.@+-]+$',
+                                                        message=_(
+                                                            'Enter a valid username. This value may contain only letters, '
+                                                            'numbers, and @/./+/-/_ characters.'
+                                                        ),
+                                                        flags=0)],
+                             label='Новое имя пользователя', required=True)

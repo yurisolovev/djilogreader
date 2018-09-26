@@ -15,8 +15,8 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from .viewmixins import OnlyCurrentUserAccessMixin
-from .forms import UserForm, ProfileForm, ProfileImageForm, UserNoteForm, UploadLogForm
-from .models import Note, Log
+from .forms import UserForm, ProfileForm, ProfileImageForm, UserNoteForm, UploadLogForm, ChangeUsernameForm
+from .models import Note, Log, User
 from .utils import get_images_list
 
 
@@ -67,8 +67,33 @@ class RegistrationView(View):
         return render(request, template_name=self.template_name, context={'form': form})
 
 
-class PasswordChangeDoneView(LoginRequiredMixin, View):
+class ChangeUsernameView(LoginRequiredMixin, View):
+    """ Change username view """
+    form = ChangeUsernameForm
+    template_name = 'registration/username_change_form.html'
 
+    def get(self, request, *args, **kwargs):
+        form = self.form()
+        return render(request, template_name=self.template_name, context={'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            new_username = form.cleaned_data['new_username']
+            if not User.objects.filter(username=new_username):
+                request.user.username = new_username
+                request.user.save()
+                messages.success(request, 'Имя пользователя было успешно изменено')
+                return redirect(reverse('core:index', args=[request.user.get_username()]))
+            else:
+                messages.error(request, 'Выбранное вами имя пользователя уже используется')
+                return redirect(reverse('core:username_change'))
+        else:
+            return render(request, template_name=self.template_name, context={'form': form})
+
+
+class PasswordChangeDoneView(LoginRequiredMixin, View):
+    """ Redirect to Index page after successful password change """
     def get(self, request, *args, **kwargs):
         messages.success(request, 'Ваш пароль был успешно изменен')
         return redirect(reverse('core:index', args=[request.user.get_username()]))
