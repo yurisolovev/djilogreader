@@ -29,6 +29,14 @@
                     <small>Неверное имя пользователя или пароль. Попробуйте снова</small>
                     </div>
                   {% endif %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      <div class="{{ message|bootstrap_message_classes }} alert-dismissable fade show" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'close' %}">&#215;</button>
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
                   <form action="{% url 'core:login' %}" method="post" class="form-validate">
                     {% csrf_token %}
                     <div class="form-group">

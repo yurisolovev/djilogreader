@@ -58,3 +58,7 @@ class ChangeUsernameForm(Form):
                                                         ),
                                                         flags=0)],
                              label='Новое имя пользователя', required=True)
+
+
+class ConfirmUsernameForm(Form):
+    username_confirm = CharField(max_length=150, required=True, label='Имя пользователя')

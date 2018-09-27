@@ -12,6 +12,7 @@ urlpatterns = [
     path('accounts/login/', views.UserLoginView.as_view(), name='login'),
     path('accounts/username_change/', views.ChangeUsernameView.as_view(), name='username_change'),
     path('accounts/password_change/done/', views.PasswordChangeDoneView.as_view(), name='password_change_done'),
+    path('accounts/delete/', views.DeleteUserAccount.as_view(), name='account_delete'),
     path('<username>/logs/', views.IndexView.as_view(), name='index'),
     path('<username>/logs/<int:pk>/', views.LogView.as_view(), name='log'),
     path('<username>/logs/delete/', views.DeleteLog.as_view(), name='delete-log'),

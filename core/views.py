@@ -1,6 +1,5 @@
 import os
 
-
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -15,9 +14,10 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from .viewmixins import OnlyCurrentUserAccessMixin
-from .forms import UserForm, ProfileForm, ProfileImageForm, UserNoteForm, UploadLogForm, ChangeUsernameForm
 from .models import Note, Log, User
 from .utils import get_images_list
+from .forms import UserForm, ProfileForm, ProfileImageForm, UserNoteForm, UploadLogForm,\
+                   ChangeUsernameForm, ConfirmUsernameForm
 
 
 class IndexRedirectView(RedirectView, View):
@@ -97,6 +97,30 @@ class PasswordChangeDoneView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         messages.success(request, 'Ваш пароль был успешно изменен')
         return redirect(reverse('core:index', args=[request.user.get_username()]))
+
+
+class DeleteUserAccount(LoginRequiredMixin, View):
+    """ Deleting the user account by installing user.is_active in False """
+    form = ConfirmUsernameForm
+    template_name = 'registration/account_delete_form.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form()
+        return render(request, template_name=self.template_name, context={'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['username_confirm'] == request.user.get_username():
+                request.user.is_active = False
+                request.user.save()
+                messages.success(request, 'Ваш аккаунт был успешно удален')
+                return redirect(reverse('core:login'))
+            else:
+                messages.error(request, 'Введенное имя пользователя не совпадает с текущим')
+                return redirect(reverse('core:account_delete'))
+        else:
+            return render(request, template_name=self.template_name, context={'form': form})
 
 
 class IndexView(LoginRequiredMixin, OnlyCurrentUserAccessMixin, View):
