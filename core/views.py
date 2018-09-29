@@ -9,7 +9,7 @@ from django.views.generic.base import RedirectView
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordResetView
 from django.contrib import messages
 from django.core.paginator import Paginator
 
@@ -17,7 +17,7 @@ from .viewmixins import OnlyCurrentUserAccessMixin
 from .models import Note, Log, User
 from .utils import get_images_list
 from .forms import UserForm, ProfileForm, ProfileImageForm, UserNoteForm, UploadLogForm,\
-                   ChangeUsernameForm, ConfirmUsernameForm
+                   ChangeUsernameForm, ConfirmUsernameForm, UserPasswordResetForm
 
 
 class IndexRedirectView(RedirectView, View):
@@ -121,6 +121,10 @@ class DeleteUserAccount(LoginRequiredMixin, View):
                 return redirect(reverse('core:account_delete'))
         else:
             return render(request, template_name=self.template_name, context={'form': form})
+
+
+class ResetUserPasswordView(PasswordResetView):
+    form_class = UserPasswordResetForm
 
 
 class IndexView(LoginRequiredMixin, OnlyCurrentUserAccessMixin, View):

@@ -27,6 +27,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'core.apps.CoreConfig',
+
+    'bootstrap4',
+    'sorl.thumbnail',
+    'django_countries',
+    'django_celery_results',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,10 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'bootstrap4',
-    'sorl.thumbnail',
-    'django_countries',
-    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +132,10 @@ DATE_INPUT_FORMATS = [
     '%B %d %Y', '%B %d, %Y',              # 'October 25 2006', 'October 25, 2006'
     '%d %B %Y', '%d %B, %Y',              # '25 October 2006', '25 October, 2006'
 ]
+
+
+# Celery settings
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'yaml']

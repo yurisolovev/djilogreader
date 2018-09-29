@@ -2,12 +2,16 @@ from django.forms import ModelForm, Form, ValidationError
 from django.forms.fields import CharField
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordResetForm
+from django.template import loader
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
 from django_countries.widgets import CountrySelectWidget
 from sorl.thumbnail.fields import ImageFormField
+
+from .tasks import send_reset_password_email_to_user
 
 from .models import Profile, Note, Log
 
@@ -53,8 +57,8 @@ class ChangeUsernameForm(Form):
     new_username = CharField(max_length=150,
                              validators=[RegexValidator(regex=r'^[\w.@+-]+$',
                                                         message=_(
-                                                            'Enter a valid username. This value may contain only letters, '
-                                                            'numbers, and @/./+/-/_ characters.'
+                                                            'Enter a valid username. This value may contain only '
+                                                            'letters, numbers, and @/./+/-/_ characters.'
                                                         ),
                                                         flags=0)],
                              label='Новое имя пользователя', required=True)
@@ -62,3 +66,14 @@ class ChangeUsernameForm(Form):
 
 class ConfirmUsernameForm(Form):
     username_confirm = CharField(max_length=150, required=True, label='Имя пользователя')
+
+
+class UserPasswordResetForm(PasswordResetForm):
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        subject = loader.render_to_string(subject_template_name, context)
+        subject = ''.join(subject.splitlines())
+        body = loader.render_to_string(email_template_name, context)
+
+        send_reset_password_email_to_user.delay(subject, body, from_email, to_email,
+                                                context, html_email_template_name)
