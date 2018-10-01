@@ -31,7 +31,7 @@ class ProfileForm(ModelForm):
 
     def clean_birthdate(self):
         data = self.cleaned_data['birthdate']
-        if data >= timezone.datetime.date(timezone.now()):
+        if data and data >= timezone.datetime.date(timezone.now()):
             raise ValidationError("Дата должна быть не позднее текущей даты")
         return data
 
