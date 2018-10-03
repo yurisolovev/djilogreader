@@ -6,15 +6,17 @@ import shutil
 import fnmatch
 import csv
 
+from .generate_kml import generate_kml
+
 
 #
 # ------------------------------ Classes -------------------------------------
 #
 class DjiLogParser:
     """ Extract csv, *.jpg files (if they are in a log) with 'djiparsetxt' application,
-        generate KML from *.txt or *.csv with 'GenerateKML' script and save results into db.
+        generate KML from *.csv and save results into db.
     """
-    def __init__(self, instance, parser='djiparsetxt', kml_gen='generateKML', log_path='', csv_path='', kml_path=''):
+    def __init__(self, instance, parser='djiparsetxt', log_path='', csv_path='', kml_path=''):
         self.log = instance
         self.log_path = log_path or instance.log_file.path
         self.csv_path = csv_path or instance.log_file.path.replace('.txt', '.csv')
@@ -22,7 +24,6 @@ class DjiLogParser:
         self.log_directory = os.path.dirname(instance.log_file.path)
         self.cwd = os.path.dirname(instance.log_file.path)
         self.log_parser = parser
-        self.kml_gen = kml_gen
 
     def create_csv(self):
         command = '{} {} > {}'.format(self.log_parser, self.log_path, self.csv_path)
@@ -39,10 +40,9 @@ class DjiLogParser:
         return True
 
     def create_kml(self):
-        command = '{} {} | {} > {}'.format(self.log_parser, self.log_path, self.kml_gen, self.kml_path)
         try:
-            subprocess.run(command, cwd=self.cwd, shell=True, check=True)
-        except subprocess.CalledProcessError:
+            generate_kml(self.csv_path, self.kml_path)
+        except EnvironmentError:
             shutil.rmtree(self.log_directory, ignore_errors=True)
             return False
         else:
@@ -53,18 +53,10 @@ class DjiLogParser:
 
     def create_all(self):
         csv_created = self.create_csv()
-        if csv_created:
-            command = '{} < {} > {}'.format(self.kml_gen, self.csv_path, self.kml_path)
-            try:
-                subprocess.run(command, cwd=self.cwd, shell=True, check=True)
-            except subprocess.CalledProcessError:
-                return False
-            else:
-                kml_path = self.log.log_file.name.replace('.txt', '.kml')
-                self.log.kml_file = kml_path
-                self.log.save()
-                return True
-        return False
+        if csv_created and self.create_kml():
+            return True
+        else:
+            return False
 
 
 #
