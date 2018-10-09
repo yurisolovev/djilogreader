@@ -7,6 +7,7 @@ import fnmatch
 import csv
 
 from .generate_kml import generate_kml
+from .generate_gpx import generate_gpx
 
 
 #
@@ -14,13 +15,14 @@ from .generate_kml import generate_kml
 #
 class DjiLogParser:
     """ Extract csv, *.jpg files (if they are in a log) with 'djiparsetxt' application,
-        generate KML from *.csv and save results into db.
+        generate KML and GPX from *.csv and save results into db.
     """
-    def __init__(self, instance, parser='djiparsetxt', log_path='', csv_path='', kml_path=''):
+    def __init__(self, instance, parser='djiparsetxt', log_path='', csv_path='', kml_path='', gpx_path=''):
         self.log = instance
         self.log_path = log_path or instance.log_file.path
         self.csv_path = csv_path or instance.log_file.path.replace('.txt', '.csv')
         self.kml_path = kml_path or instance.log_file.path.replace('.txt', '.kml')
+        self.gpx_path = gpx_path or instance.log_file.path.replace('.txt', '.gpx')
         self.log_directory = os.path.dirname(instance.log_file.path)
         self.cwd = os.path.dirname(instance.log_file.path)
         self.log_parser = parser
@@ -51,9 +53,22 @@ class DjiLogParser:
             self.log.save()
         return True
 
+    def create_gpx(self):
+        try:
+            generate_gpx(self.csv_path, self.gpx_path)
+        except EnvironmentError:
+            shutil.rmtree(self.log_directory, ignore_errors=True)
+            return False
+        else:
+            gpx_path = self.log.log_file.name.replace('.txt', '.gpx')
+            self.log.gpx_file = gpx_path
+            self.log.save()
+        return True
+
     def create_all(self):
+        """ create *.csv and *.gpx"""
         csv_created = self.create_csv()
-        if csv_created and self.create_kml():
+        if csv_created and self.create_gpx():
             return True
         else:
             return False

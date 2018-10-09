@@ -3,7 +3,7 @@ from djilogreader.settings.base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['18.223.162.25', 'ec2-18-223-162-25.us-east-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['13.58.80.238', 'djilogreader.ml']
 
 SECRET_KEY = get_env_variable('SECRET_KEY')
 
@@ -30,4 +30,14 @@ STATIC_ROOT = '/home/ubuntu/static/'
 # Media files
 
 MEDIA_ROOT = '/home/ubuntu/media/profiles/'
-MEDIA_URL = 'http://ec2-18-223-162-25.us-east-2.compute.amazonaws.com/media/profiles/'
+MEDIA_URL = 'https://djilogreader.ml/media/profiles/'
+
+
+# Email settings
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER')
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'djilogreader@yandex.ru'

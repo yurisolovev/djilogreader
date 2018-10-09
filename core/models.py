@@ -45,6 +45,7 @@ class Log(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     log_file = models.FileField(verbose_name='Лог-файл', upload_to=log_path, max_length=256)
     kml_file = models.FileField(verbose_name='Cгенерированный KML', default='', max_length=256, blank=True)
+    gpx_file = models.FileField(verbose_name='Cгенерированный GPX', default='', max_length=256, blank=True)
     csv_file = models.FileField(verbose_name='Сгенерированный CSV', default='', max_length=256, blank=True)
     log_directory = models.CharField(verbose_name='Путь к каталогу лога', default='', max_length=256, blank=True)
     data = HStoreField(default=dict)
@@ -59,7 +60,7 @@ class Log(models.Model):
     def __str__(self):
         return 'Полетный лог-файл: {}'.format(self.log_file.name)
 
-    def create_csv_kml(self):
+    def create_csv_gpx(self):
         parser = DjiLogParser(self)
         if not parser.create_all():
             self.delete()
@@ -79,7 +80,7 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
 
 
 @receiver(models.signals.post_save, sender=Log)
-def create_csv_kml(sender, instance, created, **kwargs):
+def create_csv_gpx(sender, instance, created, **kwargs):
     """ Parse uploaded DJI log-file when Log was created"""
     if created:
-        instance.create_csv_kml()
+        instance.create_csv_gpx()

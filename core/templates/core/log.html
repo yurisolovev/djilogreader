@@ -60,10 +60,10 @@
         function init() {
             var myMap = new ymaps.Map('map', {
                 center: [{{ log.data.latitude }}, {{ log.data.longitude }}],
-                zoom: 10,
+                zoom: 15,
                 controls: ['zoomControl']
             });
-            var data = ymaps.geoXml.load("{{ kml }}");
+            var data = ymaps.geoXml.load("{{ MEDIA_URL }}{{ rel_path }}/{{ gpx }}");
             data.then(function(res) {
                 myMap.geoObjects.add(res.geoObjects);
             });

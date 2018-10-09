@@ -4,6 +4,7 @@ Dropzone.options.logUpload = {
     maxFiles: 20,
     parallelUploads: 1,
     acceptedFiles: '.txt',
+    timeout: 180000,
 
     init: function () {
 

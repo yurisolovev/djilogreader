@@ -158,9 +158,9 @@ class LogView(LoginRequiredMixin, OnlyCurrentUserAccessMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['kml'] = 'http://openflights.org/demo/openflights-sample.kml'
+        context['gpx'] = os.path.split(context['log'].gpx_file.name)[1]
         context['images'] = get_images_list(context['log'].log_directory)
-        context['rel_path'] = os.path.split(context['log'].kml_file.name)[0]
+        context['rel_path'] = os.path.split(context['log'].gpx_file.name)[0]
         return context
 
 
