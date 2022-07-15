@@ -3,7 +3,7 @@ billiard==3.5.0.4
 celery==4.2.1
 django>=2.1.6
 django-bootstrap4==0.0.7
-django-celery-results==1.0.1
+django-celery-results==2.4.0
 django-countries==5.3.2
 kombu==4.2.1
 pillow>=6.2.0
